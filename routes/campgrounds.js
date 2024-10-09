@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
 const { villaSchema, reviewSchema } = require('../schemas');
+const {isLoggedIn} = require('../middleware');
 const ExpressError = require('../utils/expresserror');
 const Villa = require('../models/villa');
 const Review = require('../models/review');
@@ -35,11 +36,11 @@ router.get('/', async (req, res) => {
 });
 
 // Creating new villa
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
   res.render('new');
 });
 
-router.post('/', validateVilla, catchAsync(async (req, res, next) => {
+router.post('/', isLoggedIn, validateVilla, catchAsync(async (req, res, next) => {
   // if (!req.body.villa) throw new ExpressError('Invalid villa data ', 404)
   const villa = new Villa(req.body.villa);
   await villa.save();
@@ -58,12 +59,12 @@ router.get('/:id', catchAsync(async (req, res) => {
 }));
 
 // Edit the villa after found
-router.get('/:id/edit', catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
   const villa = await Villa.findById(req.params.id);
   res.render('edit', { villa });
 }));
 
-router.put('/:id', catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn,  catchAsync(async (req, res) => {
   const { id } = req.params;
   const villa = await Villa.findByIdAndUpdate(id, { ...req.body.villa }); // (... is the spread operator)
   req.flash('success', 'Successfully updated Villa!');
@@ -71,7 +72,7 @@ router.put('/:id', catchAsync(async (req, res) => {
 }));
 
 // Delete villa
-router.delete('/:id', catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn,  catchAsync(async (req, res) => {
   const { id } = req.params;
   await Villa.findByIdAndDelete(id);
   req.flash('success', 'Successfully deleted!');
