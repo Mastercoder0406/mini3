@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV !== "production") {
+    require('dotenv').config();
+}
+
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -10,8 +15,12 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
+
+
+//importing the routes 
 const userRoutes = require('./routes/users');
-const campgrounds = require('./routes/campgrounds');
+const villasRoutes = require('./routes/villas');
+const reviewsRoutes = require('./routes/reviews')
 
 //here give the name according which you gave in the seeds/index2 folder for database using connect (replace ** with name of db you given)
 mongoose.connect('mongodb://127.0.0.1:27017/villas', {
@@ -26,7 +35,7 @@ db.once("open", () => {
     console.log("Database connected");
 });
 //importing the reviews model
-const Review = require('./models/review')
+const Review = require('./models/reviews')
 
 
 
@@ -35,7 +44,7 @@ const catchAsync = require('./utils/catchAsync');
 
 //Joi installing for validation of input data
 const Joi = require('joi')
-const { villaSchema,reviewSchema} = require('./schemas')
+const { villaSchema, reviewSchema } = require('./schemas')
 
 
 
@@ -75,16 +84,23 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
-   console.log(req.session);
-   res.locals.currentUser = req.user;
-   res.locals.success = req.flash('success');
-   res.locals.error = req.flash('error');
-   next();
+    console.log(req.session);
+    res.locals.currentUser = req.user;
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
 })
 
 
+
+//middleware for routes
 app.use('/', userRoutes);
-app.use('/campgrounds', campgrounds);
+app.use('/villas', villasRoutes);
+//middleware for reviews routes
+app.use('/villas/:id/reviews', reviewsRoutes)
+
+//static files connection
+app.use(express.static(path.join(__dirname, 'public')))
 
 
 
@@ -95,9 +111,6 @@ app.get('/', (req, res) => {
 
 
 
-
-
-app.use('/villas', campgrounds)
 
 //for varoius another error or invalid url request
 const ExpressError = require('./utils/expresserror')

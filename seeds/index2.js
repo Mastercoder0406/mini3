@@ -35,14 +35,21 @@ const seedDB = async () => {
         const random1000 = Math.floor(Math.random() * 10);
         // adding new data or row in the table 
         const camp = new villas({
-            author: '67062ac1578ab1b75d30b267',
+            author: '670a65c65c0fd6309c50ef46',
             //more things describing the villas can be added  can be added
             // this below codes populates the database
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
 
             // randomly selecting the image from the website it needs to be modified based on input from the user 
-            image: 'https://picsum.photos/200/300?random=' + Math.random() * 1000
+            images: [
+                {
+                    //https://res.cloudinary.com/djimghjqo/image/upload/v1728662799/Villaverse/e9mqrmoznzk0xa3fi4lo.png
+                    url: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fpixabay.com%2Fimages%2Fsearch%2Frandom%2F&psig=AOvVaw0DW6fg_NKZGTLzs_Z6NYkO&ust=1728845453046000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCLjzxbTBiYkDFQAAAAAdAAAAABAE',
+                    filename: 'YelpCamp/e9mqrmoznzk0xa3fi4lo',
+                }
+
+            ]
         })
         await camp.save();
     }

@@ -11,7 +11,7 @@
 <div class="row">
   <h1 class="text-center">Edit  villa</h1>
   <div class="col-6 offset-3">
-    <form action="/villas/<%=villa._id%>?_method=PUT" method="POST">
+    <form action="/villas/<%=villa._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
         <label class="form-label" for="title">Title</label>
         <input
           class="form-control"
@@ -20,8 +20,12 @@
           name="villa[title]"
           required
           value="<%=villa.title %>">
+          <div class="valid-feedback">
+                    Looks good!
+                </div>
         
       </div>
+
       <div class="mb-3">
         <label class="form-label" for="location">Location</label>
         <input
@@ -31,54 +35,65 @@
           name="villa[location]"
           required
           value="<%=villa.location %>">
+          <div class="valid-feedback">
+                    Looks good!
+                </div>
         
       </div>
-      <div class="mb-3">
-        <label class="form-label" for="Image">Image url </label>
-        <input
-          class="form-control"
-          type="text"
-          id="image"
-          name="villa[image]"
-          required
-          value="<%=villa.image %>">
-        
-      </div>
-      
 
+
+      <div class="mb-3">
+                <label class="form-label" for="price">Villa Price</label>
+                <div class="input-group">
+                    <span class="input-group-text" id="price-label">$</span>
+                    <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price"
+                        aria-describedby="price-label" name="villa[price]" value="<%=villa.price %>"
+                        required>\<div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+       </div>
+
+      <div class="mb-3">
+                <label class="form-label" for="description">Description</label>
+                <textarea class="form-control" type="text" id="description" name="villa[description]"
+                    required><%= villa.description%></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+       </div>
+    
+
+     
+      
+           <div class="mb-3">
+                <div class="form-file custom-file">
+                    <input type="file" class="form-file-input" id="image" name="image" multiple>
+                    <label class="form-file-label" for="image">
+                        <span class="form-file-text custom-file-label">Add more image(s)...</span>
+                        <span class="form-file-button">Browse</span>
+                    </label>
+                </div>
+            </div>
+
+             <div class="mb-3">
+                <% villa.images.forEach(function(img, i) {  %>
+
+                <img src="<%=img.thumbnail %>" class="img-thumbnail" alt="">
+                <div class="form-check-inline">
+                    <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+                </div>
+                <label for="image-<%=i%>">Delete </label>
+                <% })%>
+            </div>
 
       <button class="btn btn-success">Edit villa</button>
-    </form>
+  </form>
      <a href="/villas/<%= villa._id%>">Back To villa</a> 
   </div>
 </div>
 
 
-<script>
-  // Example starter JavaScript for disabling form submissions if there are invalid fields
-  (function () {
-    "use strict";
 
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    var forms = document.querySelectorAll(".validate_form");
-
-    // Loop over them and prevent submission
-    Array.from(forms).forEach(function (form) {
-      form.addEventListener(
-        "submit",
-        function (event) {
-          if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-
-          form.classList.add("was-validated");
-        },
-        false
-      );
-    });
-  })();
-</script>
 
 
 
