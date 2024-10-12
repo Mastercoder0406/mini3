@@ -1,33 +1,11 @@
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
-const { villaSchema, reviewSchema } = require('../schemas');
-const {isLoggedIn} = require('../middleware');
-const ExpressError = require('../utils/expresserror');
+const {isLoggedIn, isAuthor, isReviewAuthor, validateVilla, validateReview} = require('../middleware');
 const Villa = require('../models/villa');
 const Review = require('../models/review');
 
-// Using middleware to validate the villa
-const validateVilla = (req, res, next) => {
-  const { error } = villaSchema.validate(req.body); // passing the data from the request to the JOI validation and taking error part if present
-  if (error) {
-    const msg = error.details.map((el) => el.message).join(',');
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
-
-// Middleware for reviews validation
-const validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((el) => el.message).join(',');
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
 
 // Listing all the villas
 router.get('/', async (req, res) => {
@@ -43,6 +21,7 @@ router.get('/new', isLoggedIn, (req, res) => {
 router.post('/', isLoggedIn, validateVilla, catchAsync(async (req, res, next) => {
   // if (!req.body.villa) throw new ExpressError('Invalid villa data ', 404)
   const villa = new Villa(req.body.villa);
+  villa.author = req.user._id;
   await villa.save();
   req.flash('success', 'Successfully made a new campground');
   res.redirect(`/villas/${villa._id}`);
@@ -50,7 +29,13 @@ router.post('/', isLoggedIn, validateVilla, catchAsync(async (req, res, next) =>
 
 // Get villa by id
 router.get('/:id', catchAsync(async (req, res) => {
-  const villa = await Villa.findById(req.params.id).populate('reviews');
+  const villa = await Villa.findById(req.params.id).populate({
+    path:'reviews',
+    populate:{
+      path: 'author'
+    }
+  }).populate('author');
+  console.log(villa);
   if(!villa){
     req.flash('error', 'Cannot find that villa!');
     return res.redirect('/campgrounds');
@@ -59,12 +44,21 @@ router.get('/:id', catchAsync(async (req, res) => {
 }));
 
 // Edit the villa after found
-router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
-  const villa = await Villa.findById(req.params.id);
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    req.flash('error', 'Invalid villa ID!');
+    return res.redirect('/campgrounds');
+  }
+  const villa = await Villa.findById(id);
+  if (!villa) {
+    req.flash('error', 'Cannot find that villa!');
+    return res.redirect('/campgrounds');
+  }
   res.render('edit', { villa });
 }));
 
-router.put('/:id', isLoggedIn,  catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, isAuthor, validateVilla,  catchAsync(async (req, res) => {
   const { id } = req.params;
   const villa = await Villa.findByIdAndUpdate(id, { ...req.body.villa }); // (... is the spread operator)
   req.flash('success', 'Successfully updated Villa!');
@@ -72,7 +66,7 @@ router.put('/:id', isLoggedIn,  catchAsync(async (req, res) => {
 }));
 
 // Delete villa
-router.delete('/:id', isLoggedIn,  catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
   const { id } = req.params;
   await Villa.findByIdAndDelete(id);
   req.flash('success', 'Successfully deleted!');
@@ -80,9 +74,10 @@ router.delete('/:id', isLoggedIn,  catchAsync(async (req, res) => {
 }));
 
 // Reviews model
-router.post('/:id/reviews', validateReview, catchAsync(async (req, res) => {
+router.post('/:id/reviews', isLoggedIn, validateReview, catchAsync(async (req, res) => {
   const villa = await Villa.findById(req.params.id);
   const review = new Review(req.body.review);
+  review.author = req.user._id;
   villa.reviews.push(review);
   await review.save();
   await villa.save();
@@ -96,7 +91,7 @@ router.get('/:id/reviews', catchAsync(async (req, res) => {
 }));
 
 // Deleting the reviews
-router.delete('/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+router.delete('/:id/reviews/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(async (req, res) => {
   const { id, reviewId } = req.params;
   await Review.findByIdAndDelete(reviewId);
   await Villa.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
