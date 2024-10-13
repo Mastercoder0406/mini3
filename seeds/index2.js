@@ -35,7 +35,8 @@ const seedDB = async () => {
         const random1000 = Math.floor(Math.random() * 10);
         // adding new data or row in the table 
         const camp = new villas({
-            author: '670a65c65c0fd6309c50ef46',
+            //670ac78bdcc486d3cca4e28f
+            author: '670ac78bdcc486d3cca4e28f',
             //more things describing the villas can be added  can be added
             // this below codes populates the database
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
