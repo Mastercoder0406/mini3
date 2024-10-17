@@ -1,24 +1,44 @@
 <% layout('/layouts/Boilerplate') %>
+
 <h1>All villas</h1>
 <div>
   <a href="/villas/new">Add a new villa</a>
 </div>
 
+<div id="map" style="width: 100%; height: 500px"></div>
 <% for(let villa of villas){ %>
 <div class="card mb-3">
   <div class="row">
     <div class="col-md-4">
-      <img class="img-fluid" src="<%= villa.images[0].url %>" />
+      <!-- <img class="img-fluid" src="<%= villa.images[0].url %>" /> -->
+      <%if(villa.images.length) {%>
+      <img class="img-fluid" alt="" src="<%=villa.images[0].url%>" />
+      <% }else {%>
+      <img
+        class="img-fluid"
+        alt=""
+        src="https://www.google.com/imgres?q=image&imgurl=https%3A%2F%2Fdfstudio-d420.kxcdn.com%2Fwordpress%2Fwp-content%2Fuploads%2F2019%2F06%2Fdigital_camera_photo-1080x675.jpg&imgrefurl=https%3A%2F%2Fwww.dfstudio.com%2Fdigital-image-size-and-resolution-what-do-you-need-to-know%2F&docid=KEFtss0dYCDpzM&tbnid=0kl2WrGN8BrkhM&vet=12ahUKEwiy5MTwi5OJAxWLbvUHHbYyKdIQM3oECDAQAA..i&w=1080&h=675&hcb=2&ved=2ahUKEwiy5MTwi5OJAxWLbvUHHbYyKdIQM3oECDAQAA"
+      />
+      <% } %>
     </div>
     <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title"><%= villa.title %></h5>
-        <p class="card-text"> <small class="text-muted"><%= villa.location %></small></p>
+        <p class="card-text"><%= villa.description %></p>
+        <p class="card-text">
+          <small class="text-muted"><%= villa.location %></small>
+        </p>
         <a href="/villas/<%=villa._id %>" class="btn btn-primary">view</a>
-    
       </div>
     </div>
   </div>
 </div>
 
 <% } %> >
+
+<script>
+  const maptilerApiKey = '<%- process.env.MAPTILER_API_KEY %>';;
+  const villas = { features: <%- JSON.stringify(villas) %> };
+</script>
+
+<script src="/javascripts/clusterMap.js"></script>
