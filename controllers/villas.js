@@ -52,13 +52,11 @@ module.exports.showVilla = async (req, res) => {
 
 populate is a Mongoose method that allows us to retrieve associated documents from other collections.
  */
-
     //error if no campground
     if (!villa) {
         req.flash('error', 'Villa not found')
         return res.redirect('/villas')
     }
-
     res.render('show', { villa })
 }
 
@@ -91,7 +89,7 @@ module.exports.updateCampground = async (req, res) => {
     //map data
     const geoData = await maptilerClient.geocoding.forward(req.body.villa.location, { limit: 1 });
     villa.geometry = geoData.features[0].geometry;
-
+//image edit
     imgs = req.files.map(f => ({ url: f.path, filename: f.filename }))
     villa.images.push(...imgs);
     await villa.save()
@@ -102,7 +100,7 @@ module.exports.updateCampground = async (req, res) => {
         await villa.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
     }
 
-    req.flash('success', 'Successfuly updated the campground')
+    req.flash('success', 'Successfuly updated the Villa')
     res.redirect(`/villas/${villa._id}`)
 }
 

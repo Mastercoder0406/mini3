@@ -2,13 +2,13 @@ const mongoose = require("mongoose")
 const Schema = mongoose.Schema;
 const Review = require('./reviews')
 
-
+//image schema 
 const ImageSchema = new Schema({
     url: String,
     filename: String
 });
 
-
+//resizing the image uploaded for thumbnail
 ImageSchema.virtual('thumbnail').get(function () {
     return this.url.replace('/upload', '/upload/w_200');
 });
