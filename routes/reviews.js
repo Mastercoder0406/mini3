@@ -3,7 +3,7 @@
 
 // Necessary imports for the 
 const express = require('express')
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 const catchAsync = require('../utils/catchAsync')
 const ExpressError = require('../utils/expresserror')
 const Villa = require('../models/villa')// importing the model for campground

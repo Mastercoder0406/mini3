@@ -13,11 +13,24 @@ ImageSchema.virtual('thumbnail').get(function () {
     return this.url.replace('/upload', '/upload/w_200');
 });
 
+const opts = { toJSON: { virtuals: true } };
+
 const villaSchema = new Schema({
     title: String,
     price: Number,
     description: String,
     location: String,
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
     images: [ImageSchema],
     author: {
         type: Schema.Types.ObjectId,
@@ -30,7 +43,16 @@ const villaSchema = new Schema({
         }
     ]
 
-})
+},opts)
+
+
+//map feature
+villaSchema.virtual('properties.popUpMarkup').get(function () {
+    return `
+    <strong><a href="/villas/${this._id}">${this.title}</a><strong>
+    <p>${this.description.substring(0, 20)}...</p>`
+});
+
 
 villaSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {

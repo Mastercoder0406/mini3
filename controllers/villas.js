@@ -2,11 +2,15 @@
 const Villa = require('../models/villa')
 const { cloudinary } = require('../cloudinary')
 
+//for map
+const maptilerClient = require("@maptiler/client");
+maptilerClient.config.apiKey = process.env.MAPTILER_API_KEY;
+
 
 //show route controls 
 module.exports.index = async (req, res) => {
     const villas = await Villa.find({});
-    res.render('villaslist', { villas})
+    res.render('villaslist', { villas })
 
 }
 
@@ -16,14 +20,20 @@ module.exports.renderform = (req, res) => {
     res.render('new');
 }
 module.exports.createVilla = async (req, res, next) => {
+    //taking data of the location 
+    const geoData = await maptilerClient.geocoding.forward(req.body.villa.location, { limit: 1 });
     // if (!req.body.campground) throw new ExpressError('Invalid Campground data ', 404)
     const villa = new Villa(req.body.villa);
+    //console.log(geoData)
+    villa.geometry = geoData.features[0].geometry;// creating geometry 
     villa.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     villa.author = req.user._id;
+    //console.log(villa);
     await villa.save();
+
     //adding flash response
-    req.flash('success', "Succesfully added the campground")
-    res.redirect(`/campgrounds/${villa._id}`);
+    req.flash('success', "Succesfully added the Villa")
+    res.redirect(`/villas/${villa._id}`);
 
 
 }
@@ -78,6 +88,10 @@ module.exports.updateCampground = async (req, res) => {
     //     return res.redirect(`/campgrounds/${id}`)
     // }
     const villa = await Villa.findByIdAndUpdate(id, { ...req.body.villa });//(... is the sprread operator)
+    //map data
+    const geoData = await maptilerClient.geocoding.forward(req.body.villa.location, { limit: 1 });
+    villa.geometry = geoData.features[0].geometry;
+
     imgs = req.files.map(f => ({ url: f.path, filename: f.filename }))
     villa.images.push(...imgs);
     await villa.save()
