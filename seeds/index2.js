@@ -37,9 +37,9 @@ const seedDB = async () => {
         const camp = new villas({
             //670ac78bdcc486d3cca4e28f
             author: '670ac78bdcc486d3cca4e28f',
-            //more things describing the villas can be added  can be added
-            // this below codes populates the database
+          // location seeding
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
+            //title seeding
             title: `${sample(descriptors)} ${sample(places)}`,
 
             //adding the description

@@ -3,8 +3,8 @@ maptilersdk.config.apiKey = maptilerApiKey;
 const map = new maptilersdk.Map({
     container: 'map',
     style: maptilersdk.MapStyle.BRIGHT,
-    center: [-103.59179687498357, 40.66995747013945],
-    zoom: 3
+    center: [72.8272101, 18.9906841],
+    zoom: 4
 });
 
 map.on('load', function () {
@@ -27,11 +27,11 @@ map.on('load', function () {
             'circle-color': [
                 'step',
                 ['get', 'point_count'],
-                '#00BCD4',
+                '#e7b61b',
                 10,
-                '#2196F3',
+                '#085085',
                 30,
-                '#3F51B5'
+                '#a7eb0c'
             ],
             'circle-radius': [
                 'step',

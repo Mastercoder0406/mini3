@@ -1,16 +1,16 @@
 <% layout('/layouts/Boilerplate') %>
 
 <h1>All villas</h1>
-<div>
+<!-- <div>
   <a href="/villas/new">Add a new villa</a>
-</div>
+</div> -->
 
 <div id="map" style="width: 100%; height: 500px"></div>
 <% for(let villa of villas){ %>
 <div class="card mb-3">
   <div class="row">
     <div class="col-md-4">
-      <!-- <img class="img-fluid" src="<%= villa.images[0].url %>" /> -->
+     
       <%if(villa.images.length) {%>
       <img class="img-fluid" alt="" src="<%=villa.images[0].url%>" />
       <% }else {%>
