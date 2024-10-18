@@ -38,7 +38,7 @@
     <div class="card mb-3">
       <div class="card-body">
         <h5 class="card-title"><%= villa.title %></h5>
-        <p class="card-text">Description different for each villa</p>
+        <p class="card-text"><%= villa.description %></p>
       </div>
 
       <ul class="list-group list-group-flush">
@@ -46,8 +46,8 @@
         <li class="list-group-item">
           Submitted by <%= villa.author.username%>
         </li>
-        <li class="list-group-item"><%= villa.price %>/night</li>
-        <li class="list-group-item">A third item</li>
+        <li class="list-group-item"><%= villa.price %>Rs./night</li>
+        <li class="list-group-item">Contact Number: <%= villa.contact %></li>
       </ul>
 
       <% if(currentUser && villa.author.equals(currentUser._id)) {%>
@@ -85,25 +85,16 @@
       class="mb-3 validated-form"
     >
       <fieldset class="starability-basic">
-        <input
-          type="radio"
-          id="no-rate"
-          class="input-no-rate"
-          name="review[rating]"
-          value="0"
-          checked
-          aria-label="No rating."
-        />
         <input type="radio" id="second-rate1" name="review[rating]" value="1" />
-        <label for="second-rate1" title="Terrible">1 star</label>
+        <label for="second-rate1" title="Terrible">1</label>
         <input type="radio" id="second-rate2" name="review[rating]" value="2" />
-        <label for="second-rate2" title="Not good">2 stars</label>
+        <label for="second-rate2" title="Not good">2</label>
         <input type="radio" id="second-rate3" name="review[rating]" value="3" />
-        <label for="second-rate3" title="Average">3 stars</label>
+        <label for="second-rate3" title="Average">3</label>
         <input type="radio" id="second-rate4" name="review[rating]" value="4" />
-        <label for="second-rate4" title="Very good">4 stars</label>
+        <label for="second-rate4" title="Very good">4</label>
         <input type="radio" id="second-rate5" name="review[rating]" value="5" />
-        <label for="second-rate5" title="Amazing">5 stars</label>
+        <label for="second-rate5" title="Amazing">5</label>
       </fieldset>
 
       <div class="mb-3">

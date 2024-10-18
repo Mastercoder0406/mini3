@@ -20,6 +20,7 @@ const villaSchema = new Schema({
     price: Number,
     description: String,
     location: String,
+    contact: Number,
     geometry: {
         type: {
             type: String,
