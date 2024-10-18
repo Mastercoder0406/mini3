@@ -1,0 +1,198 @@
+<% layout('/layouts/Boilerplate') %>
+
+<!-- Search Results Header -->
+<h1>Villas in <%= city %></h1>
+
+<!-- Link to go back to all villas -->
+<div>
+  <a href="/villas">Back to All Villas</a>
+</div>
+
+<!-- Search Form -->
+<form action="/villas/search" method="GET" class="form-inline">
+  <input type="text" name="city" placeholder="Enter city name" class="form-control" value="<%= city %>" required />
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<!-- Cluster Map for Villas in Search -->
+<div id="cluster-map"></div>
+<br>
+
+<!-- Villas List -->
+<% if (villas.length > 0) { %>
+  <% for(let villa of villas){ %>
+    <div class="card mb-3">
+      <div class="row">
+        <div class="col-md-4">
+          <% if(villa.images.length) { %>
+            <img class="img-fluid" alt="Villa Image" src="<%=villa.images[0].url%>" />
+          <% } else { %>
+            <img class="img-fluid" alt="Default Villa Image" src="https://www.example.com/default-image.jpg" />
+          <% } %>
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title"><%= villa.title %></h5>
+            <p class="card-text"><%= villa.description %></p>
+            <p class="card-text">
+              <small class="text-muted"><%= villa.location %></small>
+            </p>
+            <a href="/villas/<%= villa._id %>" class="btn btn-primary">View</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } %>
+<% } else { %>
+  <p>No villas found in <%= city %>. Try searching for another city.</p>
+<% } %>
+
+<!-- Map Script for Search Results -->
+<!-- <script>
+  const maptilerApiKey = '<%- process.env.MAPTILER_API_KEY %>';
+  const villas = { features: <%- JSON.stringify(villas) %> };
+</script> -->
+
+<script>
+  const maptilerApiKey = '<%- process.env.MAPTILER_API_KEY %>';
+  const villas = { features: <%- JSON.stringify(villas) %> };
+
+  // Function to get coordinates from the MapTiler Geocoding API
+  async function getCoordinates(city) {
+    const response = await fetch(`https://api.maptiler.com/geocoding/${encodeURIComponent(city)}.json?key=${maptilerApiKey}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch coordinates');
+    }
+    const data = await response.json();
+    if (data.features.length > 0) {
+      const coordinates = data.features[0].geometry.coordinates;
+      return coordinates; // Return [longitude, latitude]
+    }
+    return null; // Return null if no coordinates found
+  }
+
+  async function initializeMap(city) {
+    const defaultCoordinates = [78.43996124567525, 22.14478526432906]; // Central India
+    const centerCoordinates = await getCoordinates(city) || defaultCoordinates;
+
+    maptilersdk.config.apiKey = maptilerApiKey;
+
+    const map = new maptilersdk.Map({
+      container: 'cluster-map',
+      style: maptilersdk.MapStyle.BRIGHT,
+      center: centerCoordinates,  // Center on the city entered by the user
+      zoom: 10  // Initial zoom level
+    });
+
+    map.on('load', function () {
+      // Ensure the GeoJSON data is properly formatted
+      if (!villas.features || villas.features.length === 0) {
+        console.error('No villa data available');
+        return;
+      }
+
+      map.addSource('villas', {
+        type: 'geojson',
+        data: villas,
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 60
+      });
+
+      // Add clusters layer
+      map.addLayer({
+        id: 'clusters',
+        type: 'circle',
+        source: 'villas',
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': [
+            'step',
+            ['get', 'point_count'],
+            '#ffcc00',
+            10,
+            '#ff9900',
+            50,
+            '#ff3300'
+          ],
+          'circle-radius': [
+            'step',
+            ['get', 'point_count'],
+            20,
+            10,
+            30,
+            50,
+            40
+          ]
+        }
+      });
+
+      // Add cluster count layer
+      map.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'villas',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': '{point_count_abbreviated}',
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 14
+        }
+      });
+
+      // Add layer for unclustered points
+      map.addLayer({
+        id: 'unclustered-point',
+        type: 'circle',
+        source: 'villas',
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-color': '#11b4da',
+          'circle-radius': 8,
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#fff'
+        }
+      });
+
+      // Inspect a cluster on click and zoom in
+      map.on('click', 'clusters', async (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+        const clusterId = features[0].properties.cluster_id;
+        const zoom = await map.getSource('villas').getClusterExpansionZoom(clusterId);
+        map.easeTo({
+          center: features[0].geometry.coordinates,
+          zoom: zoom
+        });
+      });
+
+      // Click on unclustered villa point to display a popup
+      map.on('click', 'unclustered-point', function (e) {
+        const { popUpMarkup } = e.features[0].properties;
+        const coordinates = e.features[0].geometry.coordinates.slice();
+
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        new maptilersdk.Popup()
+          .setLngLat(coordinates)
+          .setHTML(popUpMarkup)
+          .addTo(map);
+      });
+
+      // Cursor effects for interactivity
+      map.on('mouseenter', 'clusters', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'clusters', () => {
+        map.getCanvas().style.cursor = '';
+      });
+    });
+  }
+
+  // Call the function to initialize the map when the page loads
+  initializeMap("<%= city %>".trim());
+</script>
+
+
+<script src="/javascripts/clusterMap.js"></script>

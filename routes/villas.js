@@ -16,6 +16,19 @@ const { storage } = require('../cloudinary');
 const upload = multer({ storage });
 
 
+
+//search option
+// Search route to filter villas by city
+router.get('/search', catchAsync(async (req, res) => {
+  const { city } = req.query;
+  if (!city) {
+    return res.redirect('/villas');  // If no city is provided, redirect to all villas
+  }
+  // Find villas based on location (city)
+  const villas = await Villa.find({ location: new RegExp(city, 'i') }); // Case-insensitive search
+  res.render('search', { villas, city });
+}));
+
 // Chaining of the routes using .get.post for the same url route
 router.route('/')
   .get(catchAsync(villas.index)) // grouping same route using dot method
