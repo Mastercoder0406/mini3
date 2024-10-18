@@ -27,7 +27,7 @@ module.exports.Deletereview = async (req, res) => {
     // we are removing review id from only review table but from campground atable we need $pull method 
     const { id, reviewId } = req.params;
     await Review.findByIdAndDelete(reviewId);
-    await Villa.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    await Villa.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });//pull means delete all the reviw related to  villa from review model also
     req.flash('success', 'Successfully Deleted a review')
     res.redirect(`/villas/${id}`)
 

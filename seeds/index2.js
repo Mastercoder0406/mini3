@@ -31,7 +31,7 @@ const sample = array => array[Math.floor(Math.random() * array.length)];
 
 const seedDB = async () => {
     await villas.deleteMany({}); // this line deletes the previos data 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 2; i++) {
         const random1000 = Math.floor(Math.random() * 10);
         // adding new data or row in the table 
         const camp = new villas({
