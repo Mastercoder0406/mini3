@@ -1,122 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        /* General Page Styling */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
+      /* General Page Styling */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4f8;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+      }
 
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 40px;
-        }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 40px;
+      }
 
-        section {
-            margin-bottom: 40px;
-        }
+      section {
+        margin-bottom: 40px;
+      }
 
-        h2 {
-            color: #34495e;
-            border-bottom: 2px solid #2980b9;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
+      h2 {
+        color: #34495e;
+        border-bottom: 2px solid #2980b9;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+      }
 
-        ul {
-            list-style: none;
-            padding: 0;
-        }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
 
-        /* User and Villa list styling */
-        ul li {
-            background: #fff;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      /* User and Villa list styling */
+      ul li {
+        background: #fff;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        /* User section styling */
-        ul li.user {
-            background-color: #e8f6f3;
-        }
+      /* User section styling */
+      ul li.user {
+        background-color: #e8f6f3;
+      }
 
-        /* Villa section styling */
-        .villa-box {
-            display: flex;
-            flex-wrap: wrap;
-        }
+      /* Villa section styling */
+      .villa-box {
+        display: flex;
+        flex-wrap: wrap;
+      }
 
-        .villa-item {
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 10px;
-            width: calc(33.33% - 40px); /* Three boxes per row */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+      .villa-item {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 10px;
+        width: calc(33.33% - 40px); /* Three boxes per row */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
 
-        .villa-item h3 {
-            margin: 0 0 10px;
-            color: #2c3e50;
-        }
+      .villa-item h3 {
+        margin: 0 0 10px;
+        color: #2c3e50;
+      }
 
-        .villa-item p {
-            margin: 5px 0;
-            color: #7f8c8d;
-        }
+      .villa-item p {
+        margin: 5px 0;
+        color: #7f8c8d;
+      }
 
-        .villa-item .price {
-            font-weight: bold;
-            color: #27ae60;
-        }
+      .villa-item .price {
+        font-weight: bold;
+        color: #27ae60;
+      }
 
-        .villa-item .reviews {
-            color: #f39c12;
-            font-style: italic;
-        }
+      .villa-item .reviews {
+        color: #f39c12;
+        font-style: italic;
+      }
     </style>
     <title>Admin Dashboard</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Admin Dashboard</h1>
 
     <!-- Users Section -->
     <section>
-        <h2>Users</h2>
-        <ul>
-            <% users.forEach(user => { %>
-                <li class="user"><%= user.username %> - <%= user.email %></li>
-            <% }) %>
-        </ul>
+      <h2>Users</h2>
+      <ul>
+        <% users.forEach((user, index) => { %>
+        <li class="user">
+          <%= index + 1 %>. <%= user.username %> - <%= user.email %>
+        </li>
+        <% }) %>
+      </ul>
     </section>
 
     <!-- Villas Section -->
     <section>
-        <h2>Villas</h2>
-        <div class="villa-box">
-            <% villas.forEach(villa => { %>
-                <div class="villa-item">
-                    <h3><%= villa.title %></h3>
-                    <p>Location: <%= villa.location %></p>
-                    <p class="price">Price: $<%= villa.price %></p>
-                    <p class="reviews">Reviews: <%= villa.reviews %> / 5</p>
-                </div>
-            <% }) %>
+      <h2>Villas</h2>
+      <div class="villa-box">
+        <% villas.forEach(villa => { %>
+        <div class="villa-item">
+          <h3><%= villa.title %></h3>
+          <p>Location: <%= villa.location %></p>
+          <p class="price">Price: $<%= villa.price %></p>
+          <p class="reviews">Reviews: <%= villa.reviews %> / 5</p>
         </div>
+        <% }) %>
+      </div>
     </section>
-</body>
+  </body>
 </html>

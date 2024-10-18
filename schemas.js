@@ -26,7 +26,7 @@ const extension = (joi) => ({
 const Joi = BaseJoi.extend(extension)
 
 module.exports.villaSchema = Joi.object({
-    //campground object created because inside campground(passed from req.body submtted by form contain campground object) there are many properties, since in JOI one property at a time to group all together, campground object created
+    //Vills object created because inside villa(passed from req.body submtted by form contain campground object) there are many properties, since in JOI one property at a time to group all together,villa object created
     villa: Joi.object({
         title: Joi.string().required().escapeHTML(),
         price: Joi.number().required().min(0),

@@ -85,13 +85,15 @@ const sessionConfig = {
 app.use(session(sessionConfig))
 app.use(flash());
 
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
+app.use(passport.initialize());//intitalize the passport
+app.use(passport.session());//integrating passport withe sessions, to maintain user state 
+passport.use(new LocalStrategy(User.authenticate()));// assing passport to use localstrategy 
 
-passport.serializeUser(User.serializeUser());
+passport.serializeUser(User.serializeUser());// serialize the action of what data to be stored in session {caches}
 passport.deserializeUser(User.deserializeUser());
 
+
+//middleware to handle passport strategy 
 app.use((req, res, next) => {
     console.log(req.query);
     res.locals.currentUser = req.user;
