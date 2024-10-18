@@ -83,7 +83,7 @@
     >
       
       <div class="mb-3">
-        <label class="form-label" for="rating">Rating:-<span id="ratingValue">3</span></label>
+        <label class="form-label" for="rating">Rating: <span id="ratingValue">3</span></label>
         <input
           class="form-range"
           type="range"
@@ -123,7 +123,7 @@
         <p class="starability-result" data-rating="<%=review.rating%>">
           Rated: <%= review.rating %> stars
         </p>
-        <p class="card-text">Review: <%=review.body %></p>
+        <p class="card-text">Review: <%= review.body %></p>
         <% if(currentUser && review.author.equals(currentUser._id)) {%>
         <form
           action="/villas/<%=villa._id%>/reviews/<%=review._id%>?_method=DELETE"
